@@ -6,8 +6,9 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 model Account {
@@ -51,10 +52,13 @@ model User {
   email         String?   @unique
   emailVerified DateTime?
   image         String?
+  city          String?   // New field for user's city
+  country       String?   // New field for user's country
+  postcode      String?   // New field for user's postcode
   accounts      Account[]
   sessions      Session[]
-  friendsAsUser1 Friendship[] @relation("User1Friendship") // Relation to friendships where the user is `user1`
-  friendsAsUser2 Friendship[] @relation("User2Friendship") // Relation to friendships where the user is `user2`
+  friendsAsUser1 Friendship[] @relation("User1Friendship")
+  friendsAsUser2 Friendship[] @relation("User2Friendship")
   groups    GroupMember[]
   events    Event[]
   messages  Message[]

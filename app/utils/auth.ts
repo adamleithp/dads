@@ -8,6 +8,16 @@ import bcrypt from 'bcryptjs';
 
 export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(prisma),
+  callbacks: {
+    session: ({ session, token }) => ({
+      ...session,
+      user: {
+        ...session.user,
+        id: token.sub,
+      },
+    }),
+    // ... other callbacks
+  },
   providers: [
     GitHubProvider({
       clientId: process.env.GITHUB_ID as string,
