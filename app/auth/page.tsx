@@ -1,5 +1,3 @@
-import SignInForm from "@/components/shared/SigInForm";
-import SigninWithGithub from "@/components/shared/SignInWithGithub";
 import {
   Card,
   CardContent,
@@ -11,6 +9,8 @@ import { getServerSession } from "next-auth/next";
 import React from "react";
 import { authOptions } from "../utils/auth";
 import { redirect } from "next/navigation";
+import SignInForm from "@/components/shared/signin-form";
+import SigninWithGithub from "@/components/shared/signin-with-github";
 
 const AuthRoot = async () => {
   const session = await getServerSession(authOptions);

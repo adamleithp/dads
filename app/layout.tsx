@@ -6,8 +6,10 @@ import Link from "next/link";
 const inter = Inter({ subsets: ["latin"] });
 import { getServerSession } from "next-auth";
 import { authOptions } from "./utils/auth";
-import LogoutButton from "@/components/shared/LogoutButton";
+import LogoutButton from "@/components/shared/logout-button";
 import { getMeUser } from "@/lib/user";
+import Providers from "./providers";
+import { H1, P } from "@/components/ui/typography";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -19,27 +21,33 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-    const session = await getServerSession(authOptions);
+  const session = await getServerSession(authOptions);
   const user = await getMeUser();
 
   return (
     <html lang="en">
       <body className={inter.className}>
-        <nav className="flex justify-between items-center p-4 border-b border-gray-500">
-          <div className="flex gap-2">
-            <Link href="/">Home</Link>
-          <Link href="/auth">Login</Link>
-          </div>
+        <Providers>
+          <nav className="flex pb-10 justify-between items-center pt-12 max-w-7xl mx-auto px-6">
+            <Link
+              href="/"
+              className="scroll-m-20 text-xl font-extrabold tracking-normal"
+            >
+              Dads & You
+            </Link>
 
-          {session && (
-            <div className="flex gap-2 items-center">
-              {user && <>{user?.email}</>}
-              <LogoutButton />
-            </div>
-          )}
-        </nav>
-        {children}
-        <Toaster />
+            {session && (
+              <div className="flex gap-2 items-center">
+                <P className="text-sm">{user && <>{user?.email}</>}</P>
+                <LogoutButton />
+              </div>
+            )}
+          </nav>
+          <div className="pb-12 space-y-10 max-w-7xl mx-auto px-6">
+            {children}
+          </div>
+          <Toaster />
+        </Providers>
       </body>
     </html>
   );

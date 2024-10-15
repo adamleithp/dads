@@ -1,3 +1,5 @@
+"use client";
+
 import { User } from "@prisma/client";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { Button } from "../ui/button";
@@ -6,28 +8,21 @@ import { getMeUser } from "@/lib/user";
 import prisma from "@/app/utils/prisma";
 import AddFriendForm from "./add-friend-form";
 import RemoveFriendForm from "./remove-friend-form";
+import { useQuery } from "@tanstack/react-query";
+import { getFriendStatus, getPotentialFriends } from "@/app/utils/data";
 
-export default async function FriendCard({ user }: { user: User }) {
-  const meUser = await getMeUser();
-  const friendships = await prisma.friendship.findMany({
-    where: {
-      OR: [
-        { user1Id: meUser?.id, user2Id: user.id },
-        { user1Id: user.id, user2Id: meUser?.id },
-      ],
-    },
-    include: {
-      user1: true,
-      user2: true,
-    },
+export default function FriendCard({ user }: { user: User }) {
+  const {
+    data: friendStatus,
+    isLoading,
+    isError,
+    error,
+  } = useQuery({
+    queryKey: [user.id, "friend-status"],
+    queryFn: () => getFriendStatus(user.id),
   });
 
-  console.log("------ friendships", friendships);
-
-  const friend = friendships.find(
-    (friendship) =>
-      friendship.user1Id === meUser?.id && friendship.user2Id === user.id
-  );
+  console.log("friendStatus", friendStatus);
 
   return (
     <div className="space-y-2 border border-gray-700 rounded p-4">
@@ -37,8 +32,10 @@ export default async function FriendCard({ user }: { user: User }) {
           <AvatarFallback>{user.name?.slice(0, 2)}</AvatarFallback>
         </Avatar>
 
-        {friend ? (
-          <RemoveFriendForm userId={user.id} />
+        {friendStatus?.status === "ACCEPTED" ? (
+          <RemoveFriendForm userId={user.id} status={friendStatus.status} />
+        ) : friendStatus?.status === "PENDING" ? (
+          <RemoveFriendForm userId={user.id} status={friendStatus.status} />
         ) : (
           <AddFriendForm userId={user.id} />
         )}

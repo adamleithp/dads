@@ -1,32 +1,22 @@
-import prisma from "@/app/utils/prisma";
-import FriendCard from "@/components/shared/friend-card";
-import { getMeUser } from "@/lib/user";
+import PotentialFriends from "@/components/shared/potential-friends";
+import {
+  dehydrate,
+  HydrationBoundary,
+  QueryClient,
+} from "@tanstack/react-query";
+import { getPotentialFriends } from "../utils/data";
 
 export default async function FindFriends() {
-    const user = await getMeUser();
+  const queryClient = new QueryClient();
 
-const users = await prisma.user.findMany({
-    where: {
-      id: {
-        not: user?.id
-      }
-    },
+  await queryClient.prefetchQuery({
+    queryKey: ["potential-friends"],
+    queryFn: getPotentialFriends,
   });
 
   return (
-    <div>
-      <h1>Find Friends</h1>
-      {users.length > 0 ? (
-        <ul className="grid grid-cols-3 gap-4">
-          {users.map((user) => (
-            <li key={user.id}>
-              <FriendCard user={user} />
-            </li>
-          ))}
-        </ul>
-      ) : (
-        <p>You don't have any friends yet.</p>
-      )}
-    </div>
+    <HydrationBoundary state={dehydrate(queryClient)}>
+      <PotentialFriends />
+    </HydrationBoundary>
   );
 }
