@@ -6,9 +6,7 @@ import {
 import FriendPageTitle, {
   FriendPageTitleSkeleton,
 } from "@/components/shared/friend-settings";
-import FriendSettings from "@/components/shared/friend-settings";
 import Messages from "@/components/shared/messages";
-import { H1, H2, P } from "@/components/ui/typography";
 import { getMeUser } from "@/lib/user";
 import {
   dehydrate,

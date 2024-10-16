@@ -1,20 +1,18 @@
 "use client";
 
-import { Message, User } from "@prisma/client";
-import { Input } from "../ui/input";
-import { useState } from "react";
 import {
   getFriendStatus,
   getMessagesBetweenUsers,
   sendMessage,
 } from "@/app/utils/data";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { useMutation } from "@tanstack/react-query";
-import { toast } from "../ui/use-toast";
+import { Message, User } from "@prisma/client";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { Button } from "../ui/button";
-import { RefreshCw } from "lucide-react";
+import { Input } from "../ui/input";
 import { P } from "../ui/typography";
+import { toast } from "../ui/use-toast";
 
 type MessageWithSender = Message & {
   sender: User;
