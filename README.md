@@ -2,7 +2,7 @@
 
 A social network focused on dads, whom are some of the most loneliest and forgotten bunch. Encourage frienships, meetups and seeking mental health support.
 
-The app is mostly server side rendered, we use tansatack query for most queries and mutations, but these quiries are prefetched on server, and are hydrated on client.
+The app is mostly server side rendered, we use tansatack query for most queries and mutations, but these queries are prefetched on server, and are hydrated on client.
 
 **The Stack**
 
