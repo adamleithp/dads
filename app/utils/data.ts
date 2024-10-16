@@ -155,3 +155,67 @@ export const removeFriend = async (userId: string) => {
     return handlePrismaError(error);
   }
 };
+
+export const getUserById = async (userId: string) => {
+  const user = await prisma.user.findUnique({
+    where: {
+      id: userId,
+    },
+    include: {
+      friendsAsUser1: true,
+      friendsAsUser2: true,
+    },
+  });
+  return user;
+};
+
+export const getMessagesBetweenUsers = async (friendId: string) => {
+  const meUser = await getMeUser();
+  if (!meUser?.id) throw new Error("User not found");
+
+  const messages = await prisma.message.findMany({
+    where: {
+      friendship: {
+        OR: [
+          { user1Id: meUser.id, user2Id: friendId },
+          { user1Id: friendId, user2Id: meUser.id },
+        ],
+        status: "ACCEPTED",
+      },
+    },
+    include: {
+      sender: true,
+    },
+    orderBy: {
+      createdAt: "asc",
+    },
+  });
+
+  return messages;
+};
+
+export const sendMessage = async (friendId: string, content: string) => {
+  const meUser = await getMeUser();
+  if (!meUser?.id) throw new Error("User not found");
+
+  const friendship = await prisma.friendship.findUnique({
+    where: {
+      user1Id_user2Id: {
+        user1Id: meUser.id,
+        user2Id: friendId,
+      },
+    },
+  });
+
+  if (!friendship) throw new Error("Friendship not found");
+  console.log("message content", content);
+  const message = await prisma.message.create({
+    data: {
+      content,
+      senderId: meUser.id,
+      friendshipId: friendship.id,
+    },
+  });
+
+  return message;
+};

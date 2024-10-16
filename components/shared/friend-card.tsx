@@ -10,6 +10,8 @@ import AddFriendForm from "./add-friend-form";
 import RemoveFriendForm from "./remove-friend-form";
 import { useQuery } from "@tanstack/react-query";
 import { getFriendStatus, getPotentialFriends } from "@/app/utils/data";
+import { Skeleton } from "../ui/skeleton";
+import { CheckCircle2 } from "lucide-react";
 
 export default function FriendCard({ user }: { user: User }) {
   const {
@@ -22,22 +24,25 @@ export default function FriendCard({ user }: { user: User }) {
     queryFn: () => getFriendStatus(user.id),
   });
 
-  console.log("friendStatus", friendStatus);
-
   return (
-    <div className="space-y-2 border border-gray-700 rounded p-4">
+    <div className="space-y-2 border border-gray-300 rounded-xl p-4">
       <div className="flex gap-2 justify-between">
         <Avatar>
           <AvatarImage src={user.image || ""} alt={user.name || ""} />
           <AvatarFallback>{user.name?.slice(0, 2)}</AvatarFallback>
         </Avatar>
-
-        {friendStatus?.status === "ACCEPTED" ? (
-          <RemoveFriendForm userId={user.id} status={friendStatus.status} />
-        ) : friendStatus?.status === "PENDING" ? (
-          <RemoveFriendForm userId={user.id} status={friendStatus.status} />
+        {isLoading ? (
+          <Skeleton>
+            <Button size={"custom"} variant={"secondary"} className="size-4">
+              Loading
+            </Button>
+          </Skeleton>
         ) : (
-          <AddFriendForm userId={user.id} />
+          <>
+            {friendStatus?.status === "ACCEPTED" && (
+              <CheckCircle2 className="size-4 text-green-500" />
+            )}
+          </>
         )}
       </div>
       <div>{user.name}</div>
@@ -48,5 +53,23 @@ export default function FriendCard({ user }: { user: User }) {
   );
 }
 
-export const revalidate = 36;
-export const revalidateTag = "friends";
+export function FriendCardSkeleton() {
+  return (
+    <div className="space-y-2 border border-gray-300 rounded-xl p-4">
+      <div className="flex gap-2 justify-between">
+        <Avatar isLoading>
+          <AvatarFallback>{""}</AvatarFallback>
+        </Avatar>
+      </div>
+
+      <div>
+        <Skeleton>Name</Skeleton>
+      </div>
+      <div className="flex gap-2">
+        <Skeleton>
+          <Badge>Soccer</Badge>
+        </Skeleton>
+      </div>
+    </div>
+  );
+}

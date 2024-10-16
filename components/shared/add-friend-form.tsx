@@ -6,12 +6,12 @@ import { toast } from "@/components/ui/use-toast";
 import { useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
-export default function AddFriendForm({ userId }: { userId: string }) {
+export default function AddFriendForm({ friendId }: { friendId: string }) {
   const [isLoading, setIsLoading] = useState(false);
   const queryClient = useQueryClient();
 
   const mutation = useMutation({
-    mutationFn: (userId: string) => addFriend(userId),
+    mutationFn: (friendId: string) => addFriend(friendId),
     onSuccess: () => {
       toast({
         title: "Friendship request sent",
@@ -19,7 +19,7 @@ export default function AddFriendForm({ userId }: { userId: string }) {
         variant: "default",
       });
       // Optionally invalidate and refetch relevant queries
-      queryClient.invalidateQueries({ queryKey: [userId, "friend-status"] });
+      queryClient.invalidateQueries({ queryKey: [friendId, "friend-status"] });
     },
     onError: (error: any) => {
       toast({
@@ -32,12 +32,12 @@ export default function AddFriendForm({ userId }: { userId: string }) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    mutation.mutate(userId);
+    mutation.mutate(friendId);
   };
 
   return (
     <form onSubmit={handleSubmit}>
-      <Button size={"sm"} disabled={isLoading}>
+      <Button size={"xs"} disabled={isLoading} variant={"secondary"}>
         {isLoading ? "Adding..." : "Add"}
       </Button>
     </form>

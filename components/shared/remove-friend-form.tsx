@@ -8,17 +8,17 @@ import { toast } from "../ui/use-toast";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 export default function RemoveFriendForm({
-  userId,
+  friendId,
   status,
 }: {
-  userId: string;
+  friendId: string;
   status: "PENDING" | "ACCEPTED" | "REJECTED";
 }) {
   const [isLoading, setIsLoading] = useState(false);
   const queryClient = useQueryClient();
 
   const mutation = useMutation({
-    mutationFn: (userId: string) => removeFriend(userId),
+    mutationFn: (friendId: string) => removeFriend(friendId),
     onSuccess: () => {
       toast({
         title: "Friendship request removed",
@@ -26,7 +26,7 @@ export default function RemoveFriendForm({
         variant: "default",
       });
       // Optionally invalidate and refetch relevant queries
-      queryClient.invalidateQueries({ queryKey: [userId, "friend-status"] });
+      queryClient.invalidateQueries({ queryKey: [friendId, "friend-status"] });
     },
     onError: (error: any) => {
       toast({
@@ -39,12 +39,12 @@ export default function RemoveFriendForm({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    mutation.mutate(userId);
+    mutation.mutate(friendId);
   };
 
   return (
     <form onSubmit={handleSubmit}>
-      <Button size={"sm"} disabled={isLoading}>
+      <Button size={"xs"} disabled={isLoading} variant={"secondary"}>
         {isLoading
           ? "Removing..."
           : status === "PENDING"
