@@ -1,17 +1,13 @@
 "use client";
 
+import { getFriendStatus } from "@/app/utils/data";
 import { User } from "@prisma/client";
-import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
-import { Button } from "../ui/button";
-import { Badge } from "../ui/badge";
-import { getMeUser } from "@/lib/user";
-import prisma from "@/app/utils/prisma";
-import AddFriendForm from "./add-friend-form";
-import RemoveFriendForm from "./remove-friend-form";
 import { useQuery } from "@tanstack/react-query";
-import { getFriendStatus, getPotentialFriends } from "@/app/utils/data";
-import { Skeleton } from "../ui/skeleton";
 import { CheckCircle2 } from "lucide-react";
+import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
+import { Badge } from "../ui/badge";
+import { Button } from "../ui/button";
+import { Skeleton } from "../ui/skeleton";
 
 export default function FriendCard({ user }: { user: User }) {
   const {
@@ -25,7 +21,7 @@ export default function FriendCard({ user }: { user: User }) {
   });
 
   return (
-    <div className="space-y-2 border border-gray-300 rounded-xl p-4">
+    <div className="space-y-2 border border-gray-300 rounded-xl p-4 bg-white hover:bg-gray-100 transition-colors">
       <div className="flex gap-2 justify-between">
         <Avatar>
           <AvatarImage src={user.image || ""} alt={user.name || ""} />

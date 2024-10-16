@@ -208,7 +208,6 @@ export const sendMessage = async (friendId: string, content: string) => {
   });
 
   if (!friendship) throw new Error("Friendship not found");
-  console.log("message content", content);
   const message = await prisma.message.create({
     data: {
       content,

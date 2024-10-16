@@ -2,22 +2,40 @@
 
 import * as React from "react";
 import * as AvatarPrimitive from "@radix-ui/react-avatar";
-
+import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
+
+const avatarVariants = cva(
+  "relative flex h-10 w-10 shrink-0 overflow-hidden rounded-full",
+  {
+    variants: {
+      isLoading: {
+        true: "animate-pulse bg-gray-200",
+      },
+      size: {
+        default: "h-10 w-10",
+        sm: "h-8 w-8",
+        lg: "h-12 w-12",
+        xl: "h-24 w-24",
+      },
+    },
+    defaultVariants: {
+      isLoading: false,
+      size: "default",
+    },
+  }
+);
 
 const Avatar = React.forwardRef<
   React.ElementRef<typeof AvatarPrimitive.Root>,
   React.ComponentPropsWithoutRef<typeof AvatarPrimitive.Root> & {
     isLoading?: boolean;
+    size?: VariantProps<typeof avatarVariants>["size"];
   }
->(({ className, isLoading = false, ...props }, ref) => (
+>(({ className, isLoading = false, size = "default", ...props }, ref) => (
   <AvatarPrimitive.Root
     ref={ref}
-    className={cn(
-      "relative flex h-10 w-10 shrink-0 overflow-hidden rounded-full",
-      isLoading && "animate-pulse bg-gray-200",
-      className
-    )}
+    className={cn(avatarVariants({ isLoading, size, className }))}
     {...props}
   />
 ));

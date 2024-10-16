@@ -22,35 +22,31 @@ export default function FriendPageTitle({ friendUser }: { friendUser: User }) {
     queryFn: () => getFriendStatus(friendUser.id),
   });
 
+  const friendStatusText =
+    friendStatus?.status === "ACCEPTED"
+      ? "Friend"
+      : friendStatus?.status === "PENDING"
+      ? "Friend request sent"
+      : "Not friends";
+
   return (
     <>
       <div className="flex justify-between">
-        <div className="grid grid-cols-2">
-          <Avatar>
+        <div className="flex gap-4">
+          <Avatar size="xl">
             <AvatarImage
               src={friendUser.image || ""}
               alt={friendUser.name || ""}
-              className="w-10 h-10"
             />
             <AvatarFallback>{friendUser.name?.slice(0, 2)}</AvatarFallback>
           </Avatar>
-          <div className="space-y-0">
-            <P>
-              {friendStatus?.status === "ACCEPTED"
-                ? "Friend"
-                : friendStatus?.status === "PENDING"
-                ? "Friend request sent"
-                : "Not friends"}
-            </P>
+          <div className="space-y-1">
+            <P>{friendStatusText}</P>
             <H1>{friendUser.name}</H1>
           </div>
         </div>
-        {friendStatus?.status === "ACCEPTED" ? (
-          <RemoveFriendForm
-            friendId={friendUser.id}
-            status={friendStatus.status}
-          />
-        ) : friendStatus?.status === "PENDING" ? (
+        {friendStatus?.status === "ACCEPTED" ||
+        friendStatus?.status === "PENDING" ? (
           <RemoveFriendForm
             friendId={friendUser.id}
             status={friendStatus.status}

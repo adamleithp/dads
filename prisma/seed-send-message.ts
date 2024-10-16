@@ -74,7 +74,7 @@ async function main() {
   });
   const message3 = await prisma.message.create({
     data: {
-      content: "You want to go to the pub later?",
+      content: "ANOTHER MESSAGE",
       senderId: user.id,
       friendshipId: friendship.id,
     },

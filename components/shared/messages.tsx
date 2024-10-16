@@ -3,13 +3,18 @@
 import { Message, User } from "@prisma/client";
 import { Input } from "../ui/input";
 import { useState } from "react";
-import { getMessagesBetweenUsers, sendMessage } from "@/app/utils/data";
+import {
+  getFriendStatus,
+  getMessagesBetweenUsers,
+  sendMessage,
+} from "@/app/utils/data";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "../ui/use-toast";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { Button } from "../ui/button";
 import { RefreshCw } from "lucide-react";
+import { P } from "../ui/typography";
 
 type MessageWithSender = Message & {
   sender: User;
@@ -31,6 +36,16 @@ export default function Messages({
     queryKey: [friendId, "messages"],
     queryFn: () => getMessagesBetweenUsers(friendId),
     refetchInterval: liveUpdates ? 1000 : false,
+  });
+
+  const {
+    data: friendStatus,
+    isLoading,
+    isError,
+    error,
+  } = useQuery({
+    queryKey: [friendId, "friend-status"],
+    queryFn: () => getFriendStatus(friendId),
   });
 
   const mutation = useMutation({
@@ -99,7 +114,7 @@ export default function Messages({
 
   const groupedMessages =
     messages?.reduce((acc, message, index, array) => {
-      const lastGroup = acc[acc.length - 1];
+      const lastGroup = acc[0];
       if (
         lastGroup &&
         lastGroup[0].senderId === message.senderId &&
@@ -114,7 +129,7 @@ export default function Messages({
           },
         });
       } else {
-        acc.push([message]);
+        acc.unshift([message]);
       }
       return acc;
     }, [] as MessageWithSender[][]) || [];
@@ -136,16 +151,21 @@ export default function Messages({
         </Button>
       </div>
 
-      <div className="overflow-auto max-h-[500px] pt-4 px-4">
+      <ul className="flex flex-col-reverse overflow-y-auto overflow-auto max-h-[500px] pt-4 px-4">
         {groupedMessages.length === 0 ? (
-          <div className="text-center text-gray-500 h-[300px] items-center flex justify-center">
-            No messages yet
+          <div className="text-center text-gray-500 h-[300px] items-center flex flex-col justify-center space-y-0">
+            <P>No messages yet</P>
+            <P>
+              {friendStatus?.status === "ACCEPTED"
+                ? "Send a message"
+                : "You need to be friends to send messages"}
+            </P>
           </div>
         ) : (
           <>
             {groupedMessages.map((group, groupIndex) => (
-              <div key={groupIndex} className="mb-4">
-                <div className="flex items-start space-x-2">
+              <li key={groupIndex}>
+                <div className="flex items-start space-x-2 mb-4">
                   <Avatar>
                     <AvatarImage
                       src={group[0].sender.image || ""}
@@ -169,13 +189,14 @@ export default function Messages({
                     )}
                   </div>
                 </div>
-              </div>
+              </li>
             ))}
           </>
         )}
-      </div>
+      </ul>
       <form onSubmit={handleSubmit} className="px-4">
         <Input
+          disabled={friendStatus?.status !== "ACCEPTED"}
           value={message}
           placeholder="Type your message here..."
           onChange={(e) => setMessage(e.target.value)}
