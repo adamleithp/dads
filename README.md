@@ -50,7 +50,7 @@ pnpm run dev
 
 #### Seeds
 
-It's useful in development to teardown the database and seed it with data so i can test a particular feature quickly.
+It's useful in development to teardown the database and seed it with data to test a particular feature quickly.
 
 You will find `seed.ts` files in `/prisma/` folder.
 
